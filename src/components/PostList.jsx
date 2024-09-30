@@ -1,52 +1,60 @@
 import Post from './Post';
 import classes from './PostList.module.css';
-import NewPost from './NewPost';
-import { useState } from 'react';
-import Modal from './Modal';
+import { useState, useEffect } from 'react';
 
-function PostList ({isPosting, onStopPosting}) {
-  const [enteredBody, setEnteredBody] = useState('');
-  const [enteredAuthor, setEnteredAuthor] = useState('');
+function PostList () {
+  const[posts, setPosts] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
 
-  function bodyChangeHandler(event) {
-    setEnteredBody(event.target.value);
+  // fetch('http://localhost:8080/posts').then(response => response.json()).then(data => {
+  //   setPosts(data.posts);
+  // });
+
+  useEffect(() => {
+    async function fetchPosts() {
+      setIsFetching(true);
+      const response = await fetch('http://localhost:8080/posts')
+      const resData = await response.json()
+      setPosts(resData.posts);
+      setIsFetching(false);
+    };
+
+    fetchPosts();
+  }, []);
+
+  function addPostHandler(postData) {
+    fetch('http://localhost:8080/posts', {
+      method: 'POST',
+      body: JSON.stringify(postData),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    setPosts((existingPosts) => [postData, ...existingPosts]);
   }
-
-  function authorChangeHandler(event) {
-    setEnteredAuthor(event.target.value);
-  }
-
-  // let modalContent;
-  // if(modalIsVisible) {
-  //   modalContent = (
-  //     <Modal onClose={hideModalHandler}>
-  //       <NewPost
-  //         onBodyChange={bodyChangeHandler}
-  //         onAuthorChange={authorChangeHandler}
-  //         onCancel={onStopPosting}
-  //       />
-  //     </Modal>
-  //   )
-  // }
 
   return (
     <>
-    { isPosting && (
-      <Modal onClose={onStopPosting}>
-        <NewPost
-          onBodyChange={bodyChangeHandler}
-          onAuthorChange={authorChangeHandler}
-          onCancel={onStopPosting}
-        />
-      </Modal>
+    {!isFetching && posts.length > 0 && (
+    <ul classes={classes.posts}>
+      {posts.map((post, index) => (
+        <Post key={index} author={post.author} body={post.body}/>
+      ))}
+    </ul>
     )}
 
-      <ul classes={classes.posts}>
-        <Post author={enteredAuthor} body={enteredBody}/>
-        <Post author="Manuel" body="check out full course!"/>
-      </ul>
+    {!isFetching && posts.length === 0 && (
+      <div style={{ textAlign: 'center', color: 'white'}}>
+        <h2>まだ投稿がありません。</h2>
+        <p>新しい投稿を作成してください。</p>
+      </div>
+    )}
+    {isFetching && (
+      <div style={{ textAlign: 'center', color: 'white'}}>
+        <p>読み込み中...</p>
+      </div>
+      )}
     </>
-
   )
 }
 

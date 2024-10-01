@@ -1,46 +1,40 @@
 import classes from './NewPost.module.css';
-import { useState } from 'react';
 import Modal from '../components/Modal';
+import { Link, Form, redirect } from 'react-router-dom';
 
-function NewPost({onCancel, onAddPost}) {
-  const [enteredBody, setEnteredBody] = useState('');
-  const [enteredAuthor, setEnteredAuthor] = useState('');
-
-  function bodyChangeHandler(event) {
-    setEnteredBody(event.target.value);
-  }
-
-  function authorChangeHandler(event) {
-    setEnteredAuthor(event.target.value);
-  }
-
-  function submitHandler(event) {
-    event.preventDefault();
-    const postData = {
-      body: enteredBody,
-      author: enteredAuthor
-    };
-    onAddPost(postData);
-    onCancel();
-  }
+function NewPost() {
   return (
     <Modal>
-      <form className={classes.form} onSubmit={submitHandler}>
+      <Form method="post" className={classes.form}>
         <p>
           <label htmlFor="body">投稿内容</label>
-          <textarea id="body" required rows={3} onChange={bodyChangeHandler}/>
+          <textarea name="body" id="body" required rows={3}/>
         </p>
         <p>
           <label htmlFor='name'>名前</label>
-          <input id='name' type='text' required onChange={authorChangeHandler}/>
+          <input id='name' name="author" type='text' required />
         </p>
         <p className={classes.actions}>
-          <button type="button" onClick={onCancel}>キャンセル</button>
+          <Link type="button" to="..">キャンセル</Link>
           <button>投稿</button>
         </p>
-      </form>
+      </Form>
     </Modal>
   );
 }
 
 export default NewPost;
+
+export async function action({request}) {
+  const formData = await request.formData();//returns promise
+  const postData = Object.fromEntries(formData);
+  await fetch('http://localhost:8080/posts', {
+    method: 'POST',
+    body: JSON.stringify(postData),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  return redirect('/');
+}

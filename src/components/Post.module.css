@@ -1,10 +1,7 @@
-body{
-  background-color: #5242df;
-}
 .post {
   margin: 1rem 0;
   padding: 1rem;
-  background-color: #9c7eee;
+  background-color: #ffa850;
   border-radius: 8px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   animation: animate-in 1s ease-out forwards;
@@ -12,10 +9,14 @@ body{
   height: 80px;
 }
 
+.post a {
+  text-decoration: none;
+}
+
 .author {
   font-size: 0.8rem;
   font-weight: bold;
-  color: #543280;
+  color: #2a2630;
   margin: 0;
   text-transform: uppercase;
 }
@@ -24,7 +25,7 @@ body{
   white-space: pre-wrap;
   font-size: 1.25rem;
   margin: 0.25rem 0 0 0;
-  color: #593884;
+  color: #2a2630;
   font-style: italic;
 }
 

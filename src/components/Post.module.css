@@ -9,6 +9,10 @@
   height: 80px;
 }
 
+.post:hover {
+  background-color: #ff8000;
+}
+
 .post a {
   text-decoration: none;
 }
